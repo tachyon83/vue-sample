@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eventBus</title>
+    <script src='https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js'></script>
+</head>
+
+<body>
+    <div id='app'>
+        <child-cmp v-bind:props1='message1' v-bind:props2='message2'></child-cmp>
+    </div>
+
+    <script>
+        const eventBus = new Vue()
+
+        Vue.component('child-cmp', {
+            props: ['props1', 'props2'],
+            template: "<button v-on:click='method1'>+5,{{props1}},{{props2}}</button>",
+            methods: {
+                method1: function () {
+                    eventBus.$emit('ev1', this.props1)
+                }
+            },
+            mounted: function () {
+                console.log('mounted')
+            },
+            updated: function () {
+                console.log('updated', this.props1)
+            },
+            beforeUpdate: function () {
+                console.log('beforeUpdate')
+            }
+        })
+        new Vue({
+            created: function () {
+                eventBus.$on('ev1', value => {
+                    this.message1 = value * 3
+                })
+            },
+            el: '#app',
+            data: {
+                message1: 1,
+                message2: 2,
+                message3: 'm3',
+            },
+            methods: {
+                method1: function () {
+                    this.message1 += 5
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
